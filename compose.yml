@@ -23,14 +23,14 @@ services:
       interval: 30s
       timeout: 3s
       retries: 3
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE
-    user: "1000:1000"
+    # Temporarily remove hardening to fix volume permissions
+    # security_opt:
+    #   - no-new-privileges:true
+    # read_only: true
+    # cap_drop:
+    #   - ALL
+    # cap_add:
+    #   - NET_BIND_SERVICE
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev
       - /run:rw,noexec,nosuid,nodev
