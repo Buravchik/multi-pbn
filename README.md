@@ -16,10 +16,11 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 
 ## Quick start
 
-1. Set your email for Let's Encrypt notifications:
+1. Copy the environment template and set your email:
 
    ```bash
-   export CADDY_EMAIL=you@example.com
+   cp .env.example .env
+   # Edit .env and set CADDY_EMAIL=your-email@example.com
    ```
 
 2. Start the stack:
@@ -40,6 +41,7 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 
 ```
 .
+├── .env.example
 ├── Caddyfile
 ├── compose.yml
 ├── scripts/
