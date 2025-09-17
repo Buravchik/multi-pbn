@@ -11,7 +11,6 @@ services:
     environment:
       ACME_AGREE: "true"
       TZ: UTC
-      CADDY_ADMIN: "off"
       # Set your email for Let's Encrypt notifications
       CADDY_EMAIL: ${CADDY_EMAIL:-you@example.com}
     volumes:
