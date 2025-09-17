@@ -11,16 +11,13 @@
 		level INFO
 	}
 }
-
 :80 {
 	redir https://{host}{uri}
 }
-
 :443 {
 	root * /srv/sites/{host}
 	encode zstd gzip
 	file_server
-
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 		X-Content-Type-Options "nosniff"
@@ -32,7 +29,6 @@
 		Cache-Control "public, max-age=3600"
 		Vary "Accept-Encoding"
 	}
-
 	@missing not file
 	handle @missing {
 		respond "Site or file not found" 404

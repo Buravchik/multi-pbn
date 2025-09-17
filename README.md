@@ -21,15 +21,25 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 
 ## Quick start
 
-1. Copy the environment template and set your email:
+**Easy way (recommended):**
+```bash
+./scripts/start.sh
+```
 
+This script will:
+- Automatically copy `.env.example` to `.env` if missing
+- Validate your environment configuration
+- Check Caddyfile formatting
+- Start the services
+- Verify everything is working
+
+**Manual way:**
+1. Copy the environment template and set your email:
    ```bash
    cp .env.example .env
    # Edit .env and set CADDY_EMAIL=your-email@example.com
    ```
-
 2. Start the stack:
-
    ```bash
    docker compose up -d
    ```
@@ -118,10 +128,32 @@ This creates a compressed backup of:
 
 Backups are stored in `./backups/` with timestamps.
 
+## Validation
+
+Before starting services, validate your configuration:
+
+```bash
+./scripts/validate.sh
+```
+
+**Run validation when:**
+- Before starting services (`docker compose up -d`)
+- After editing `.env` or `Caddyfile`
+- After making configuration changes
+- When troubleshooting issues
+- For regular health checks
+
+**The validator checks:**
+- ✅ `.env` file exists and `CADDY_EMAIL` is set
+- ✅ Caddyfile syntax and formatting
+- ✅ Docker is running
+- ✅ All configuration is valid
+
 ## Troubleshooting
 
 - Ensure ports 80 and 443 are open to the internet.
 - DNS must resolve to this server before TLS issuance succeeds.
+- **First, run validation:** `./scripts/validate.sh`
 - Check logs:
 
   ```bash
