@@ -158,11 +158,29 @@ Before starting services, validate your configuration:
 - ✅ Docker is running
 - ✅ All configuration is valid
 
+## Performance Optimization
+
+### UDP Buffer Sizes (HTTP/3)
+
+If you see UDP buffer warnings in the logs, optimize them for better HTTP/3 performance:
+
+```bash
+sudo ./scripts/fix-udp-buffers.sh
+```
+
+This script:
+- Sets optimal UDP buffer sizes for HTTP/3 (QUIC)
+- Makes changes persistent across reboots
+- Improves performance for high-traffic sites
+
+**Note:** The warning doesn't break functionality, but fixing it improves performance.
+
 ## Troubleshooting
 
 - Ensure ports 80 and 443 are open to the internet.
 - DNS must resolve to this server before TLS issuance succeeds.
 - **First, run validation:** `./scripts/validate.sh`
+- **For UDP buffer warnings:** `sudo ./scripts/fix-udp-buffers.sh`
 - Check logs:
 
   ```bash

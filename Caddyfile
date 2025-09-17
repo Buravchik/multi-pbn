@@ -1,15 +1,6 @@
 {
 	email {env.CADDY_EMAIL}
 	admin off
-	log {
-		output file /var/log/caddy/access.log {
-			roll_size 100mb
-			roll_keep 5
-			roll_keep_for 720h
-		}
-		format json
-		level INFO
-	}
 }
 :80 {
 	redir https://{host}{uri}
@@ -18,8 +9,6 @@
 	root * /srv/sites/{host}
 	encode zstd gzip
 	file_server
-	# Disable HTTP/3 to avoid UDP buffer warnings
-	protocols h1 h2
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 		X-Content-Type-Options "nosniff"
