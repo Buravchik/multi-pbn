@@ -18,6 +18,8 @@
 	root * /srv/sites/{host}
 	encode zstd gzip
 	file_server
+	# Disable HTTP/3 to avoid UDP buffer warnings
+	protocols h1 h2
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 		X-Content-Type-Options "nosniff"
