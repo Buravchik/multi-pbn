@@ -8,6 +8,11 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 - One folder per domain under `sites/`
 - Add a new site with a simple script
 - No per-site containers; minimal ops
+- Resource limits to prevent server overload
+- Enhanced security headers and CSP
+- Structured JSON logging with rotation
+- Automated backup system
+- Hardened container security
 
 ## Requirements
 
@@ -99,7 +104,19 @@ docker compose restart caddy
 
 ## Backups
 
-- Backup `sites/` (your content) and the `caddy_data` volume (certificate state).
+Use the automated backup script:
+
+```bash
+./scripts/backup.sh
+```
+
+This creates a compressed backup of:
+- All sites in `sites/` directory
+- Caddy configuration files
+- SSL certificates and Caddy state
+- Docker volumes
+
+Backups are stored in `./backups/` with timestamps.
 
 ## Troubleshooting
 
