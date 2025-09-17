@@ -41,7 +41,7 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 ```
 .
 ├── Caddyfile
-├── docker-compose.yml
+├── compose.yml
 ├── scripts/
 │   └── add-site.sh
 └── sites/
@@ -59,6 +59,19 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 
 - Caddy serves content from `/srv/sites/{host}`. If a request is for `example.com`, it serves files from `sites/example.com`.
 - Certificates are stored in the Docker volume `caddy_data` and are renewed automatically.
+
+## Hardening
+
+This stack runs a hardened single Caddy container:
+
+- Read-only root filesystem
+- Drops all Linux capabilities except `NET_BIND_SERVICE`
+- `no-new-privileges` enabled
+- Runs as non-root user `1000:1000`
+- `sites/` is mounted read-only; only `/data` and `/config` are writable volumes for Caddy state
+- Tmpfs for `/tmp` and `/run`
+
+If you need file uploads or dynamic writes, use a separate writable volume/path per requirement.
 
 ## Per-site tweaks
 
