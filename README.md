@@ -22,11 +22,13 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 ## Quick start
 
 **Easy way (recommended):**
+
 ```bash
 ./scripts/start.sh
 ```
 
 This script will:
+
 - Automatically copy `.env.example` to `.env` if missing
 - Validate your environment configuration
 - Check Caddyfile formatting
@@ -34,12 +36,16 @@ This script will:
 - Verify everything is working
 
 **Manual way:**
+
 1. Copy the environment template and set your email:
+
    ```bash
    cp .env.example .env
    # Edit .env and set CADDY_EMAIL=your-email@example.com
    ```
+
 2. Start the stack:
+
    ```bash
    docker compose up -d
    ```
@@ -54,7 +60,7 @@ This script will:
 
 ## Layout
 
-```
+```text
 .
 ├── .env.example
 ├── Caddyfile
@@ -121,6 +127,7 @@ Use the automated backup script:
 ```
 
 This creates a compressed backup of:
+
 - All sites in `sites/` directory
 - Caddy configuration files
 - SSL certificates and Caddy state
@@ -137,6 +144,7 @@ Before starting services, validate your configuration:
 ```
 
 **Run validation when:**
+
 - Before starting services (`docker compose up -d`)
 - After editing `.env` or `Caddyfile`
 - After making configuration changes
@@ -144,6 +152,7 @@ Before starting services, validate your configuration:
 - For regular health checks
 
 **The validator checks:**
+
 - ✅ `.env` file exists and `CADDY_EMAIL` is set
 - ✅ Caddyfile syntax and formatting
 - ✅ Docker is running
@@ -159,5 +168,3 @@ Before starting services, validate your configuration:
   ```bash
   docker compose logs -f caddy | cat
   ```
-
-
