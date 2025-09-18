@@ -5,7 +5,7 @@
 :80 {
 	redir https://{host}{uri}
 }
-:443 {
+pumpumpum.uploadpix.org {
 	root * /srv/sites/{host}
 	encode zstd gzip
 	file_server
