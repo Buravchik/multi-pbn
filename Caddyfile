@@ -1,14 +1,22 @@
 {
 	email {env.CADDY_EMAIL}
 	admin off
+	on_demand_tls {
+		ask http://ask:8080/allow
+	}
 }
+
 :80 {
 	redir https://{host}{uri}
 }
-pumpumpum.uploadpix.org {
+
+:443 {
 	root * /srv/sites/{host}
 	encode zstd gzip
 	file_server
+	tls {
+		on_demand
+	}
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 		X-Content-Type-Options "nosniff"
@@ -19,9 +27,5 @@ pumpumpum.uploadpix.org {
 		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'"
 		Cache-Control "public, max-age=3600"
 		Vary "Accept-Encoding"
-	}
-	@missing not file
-	handle @missing {
-		respond "Site or file not found" 404
 	}
 }
