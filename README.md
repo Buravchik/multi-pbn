@@ -12,8 +12,8 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 - Resource limits to prevent server overload
 - Enhanced security headers and CSP
 - Structured JSON logging with rotation
-- Automated backup system
-- Hardened container security
+- Manual backup script for site content and certificates
+- Production-ready container setup
 
 ## Requirements
 
@@ -90,18 +90,16 @@ This script will:
 - caddy: Static file serving and automatic HTTPS (on-demand TLS)
 - ask: Lightweight approval endpoint that authorizes certificates only when `sites/<domain>/` exists
 
-## Hardening
+## Security
 
-This stack runs a hardened single Caddy container:
+This stack runs a production-ready Caddy container with:
 
-- Read-only root filesystem
-- Drops all Linux capabilities except `NET_BIND_SERVICE`
-- `no-new-privileges` enabled
-- Runs as non-root user `1000:1000`
-- `sites/` is mounted read-only; only `/data` and `/config` are writable volumes for Caddy state
-- Tmpfs for `/tmp` and `/run`
+- Security headers (HSTS, CSP, X-Frame-Options, etc.)
+- Resource limits to prevent resource exhaustion
+- Health checks for service monitoring
+- `sites/` mounted read-only; only `/data` and `/config` are writable for Caddy state
 
-If you need file uploads or dynamic writes, use a separate writable volume/path per requirement.
+For additional hardening, you can add container security options to `compose.yml` as needed.
 
 ## Per-site tweaks
 
@@ -127,7 +125,7 @@ docker compose restart caddy
 
 ## Backups
 
-Use the automated backup script:
+Create manual backups using the backup script:
 
 ```bash
 ./scripts/backup.sh
@@ -141,6 +139,8 @@ This creates a compressed backup of:
 - Docker volumes
 
 Backups are stored in `./backups/` with timestamps.
+
+**Note:** This is a manual backup system. For automated backups, consider setting up a cron job or external backup solution.
 
 ## Validation
 
