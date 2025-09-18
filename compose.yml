@@ -24,14 +24,14 @@ services:
       interval: 30s
       timeout: 3s
       retries: 3
-    # Security hardening (read_only disabled for volume permissions)
-    security_opt:
-      - no-new-privileges:true
-    # read_only: true  # Disabled to allow volume permission fixes
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE
+    # Security hardening temporarily disabled to fix SSL issues
+    # security_opt:
+    #   - no-new-privileges:true
+    # read_only: true
+    # cap_drop:
+    #   - ALL
+    # cap_add:
+    #   - NET_BIND_SERVICE
     # UDP buffer sizes should be set at system level
     # Run: sudo ./scripts/fix-udp-buffers.sh
     # Run as caddy user (1000:1000)
