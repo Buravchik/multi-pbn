@@ -1,55 +1,24 @@
 services:
   caddy:
-    build: .
-    pull_policy: always
+    image: caddy:2-alpine
     restart: unless-stopped
-    init: true
-    stop_grace_period: 30s
     ports:
       - "80:80"
       - "443:443"
     environment:
       ACME_AGREE: "true"
       TZ: UTC
-      # Set your email for Let's Encrypt notifications
       CADDY_EMAIL: ${CADDY_EMAIL:-you@example.com}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./sites:/srv/sites:ro
       - caddy_data:/data
       - caddy_config:/config
-      - caddy_logs:/var/log/caddy
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:80 >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 3s
       retries: 3
-    # Security hardening temporarily disabled to fix SSL issues
-    # security_opt:
-    #   - no-new-privileges:true
-    # read_only: true
-    # cap_drop:
-    #   - ALL
-    # cap_add:
-    #   - NET_BIND_SERVICE
-    # UDP buffer sizes should be set at system level
-    # Run: sudo ./scripts/fix-udp-buffers.sh
-    # Run as caddy user (1000:1000)
-    user: "1000:1000"
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev
-      - /run:rw,noexec,nosuid,nodev
-    # Resource limits to prevent server overload
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '1.0'
-        reservations:
-          memory: 128M
-          cpus: '0.25'
-    # Caddy needs write access to /data and /config; keep them as volumes
-    # Sites are mounted read-only above
 
 volumes:
   caddy_data:
