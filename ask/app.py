@@ -9,13 +9,17 @@ SITES_ROOT = os.environ.get("SITES_ROOT", "/srv/sites")
 def health():
     return "ok", 200
 
-@app.post("/allow")
+@app.route("/allow", methods=["GET", "POST"])
 def allow():
-    data = request.get_json(silent=True) or {}
-    # Caddy sends { "identifier": "example.com" }
-    domain = data.get("identifier") or request.args.get("domain")
+    # Handle both GET (with ?domain=) and POST (with JSON body)
+    if request.method == "POST":
+        data = request.get_json(silent=True) or {}
+        domain = data.get("identifier")
+    else:
+        domain = request.args.get("domain")
+    
     if not domain:
-        return jsonify({"error": "missing identifier"}), 400
+        return jsonify({"error": "missing domain"}), 400
 
     # Approve only if directory exists for that domain
     site_path = os.path.join(SITES_ROOT, domain)

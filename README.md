@@ -6,6 +6,7 @@ This repo deploys hundreds of static sites (HTML/JS/CSS) behind a single Caddy s
 
 - Auto HTTPS and renewals for each domain (no certbot needed)
 - One folder per domain under `sites/`
+- Configurationless hosting via on-demand TLS (no per-domain config)
 - Add a new site with a simple script
 - No per-site containers; minimal ops
 - Resource limits to prevent server overload
@@ -81,7 +82,13 @@ This script will:
 ## How it works
 
 - Caddy serves content from `/srv/sites/{host}`. If a request is for `example.com`, it serves files from `sites/example.com`.
+- Certificates are issued automatically using on-demand TLS: when the first request for a hostname arrives, Caddy asks the internal `ask` service for approval; if a directory exists for that hostname, issuance is approved and the cert is obtained.
 - Certificates are stored in the Docker volume `caddy_data` and are renewed automatically.
+
+## Services
+
+- caddy: Static file serving and automatic HTTPS (on-demand TLS)
+- ask: Lightweight approval endpoint that authorizes certificates only when `sites/<domain>/` exists
 
 ## Hardening
 
@@ -186,3 +193,11 @@ This script:
   ```bash
   docker compose logs -f caddy | cat
   ```
+
+Certificate not issued for a domain:
+
+- Make sure `sites/<domain>/` exists (e.g., `sites/example.com/index.html`)
+- Hit HTTP first to trigger redirect: `curl -I http://<domain>`
+- Then HTTPS: `curl -I https://<domain>`
+- Check logs: `docker compose logs -f caddy` and `docker compose logs -f ask`
+- If using Cloudflare, set SSL/TLS mode to Full (or Full strict) and consider DNS-only (grey cloud) while debugging
