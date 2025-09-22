@@ -38,10 +38,47 @@ services:
     restart: unless-stopped
     volumes:
       - ./sites:/srv/sites:ro
+      - ./monitoring/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-monitoring.conf:ro
     environment:
       TZ: UTC
     healthcheck:
       test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # Monitoring services (for external Grafana to scrape)
+  node-exporter:
+    image: prom/node-exporter:latest
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:9100/metrics >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  php-fpm-exporter:
+    image: hipages/php-fpm_exporter:latest
+    restart: unless-stopped
+    ports:
+      - "9253:9253"
+    environment:
+      PHP_FPM_SCRAPE_URI: "tcp://php-fpm:9000/status"
+    depends_on:
+      - php-fpm
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:9253/metrics >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 3s
       retries: 3

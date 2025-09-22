@@ -2,7 +2,7 @@ FROM python:3.12-alpine
 WORKDIR /app
 RUN apk add --no-cache curl
 COPY app.py /app/app.py
-RUN pip install --no-cache-dir flask gunicorn
+RUN pip install --no-cache-dir flask gunicorn prometheus_client
 ENV PYTHONUNBUFFERED=1
 EXPOSE 8080
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--timeout", "30", "app:app"]

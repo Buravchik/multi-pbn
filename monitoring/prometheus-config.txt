@@ -1,0 +1,33 @@
+# Add these targets to your existing Prometheus configuration
+# Copy these scrape_configs to your prometheus.yml file
+
+scrape_configs:
+  # Multi-site server system metrics
+  - job_name: 'multi-site-node'
+    static_configs:
+      - targets: ['YOUR_SERVER_IP:9100']
+    scrape_interval: 15s
+
+  # Multi-site server web metrics (Caddy)
+  - job_name: 'multi-site-caddy'
+    static_configs:
+      - targets: ['YOUR_SERVER_IP:2019']
+    scrape_interval: 15s
+
+  # Multi-site server PHP-FPM metrics
+  - job_name: 'multi-site-php-fpm'
+    static_configs:
+      - targets: ['YOUR_SERVER_IP:9253']
+    scrape_interval: 15s
+
+  # Multi-site server application metrics
+  - job_name: 'multi-site-ask'
+    static_configs:
+      - targets: ['YOUR_SERVER_IP:8080']
+    scrape_interval: 15s
+
+# Instructions:
+# 1. Replace YOUR_SERVER_IP with your actual server IP
+# 2. Add these 4 scrape_configs to your existing prometheus.yml
+# 3. Restart Prometheus: docker restart prometheus
+# 4. Check targets in Prometheus UI: http://your-prometheus:9090/targets

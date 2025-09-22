@@ -66,8 +66,16 @@ This script will:
 ├── .env.example
 ├── Caddyfile
 ├── compose.yml
+├── monitoring/
+│   ├── README.md
+│   ├── prometheus-config.txt
+│   ├── php-fpm.conf
+│   └── grafana-dashboard.json
 ├── scripts/
-│   └── add-site.sh
+│   ├── add-site.sh
+│   ├── setup-monitoring-simple.sh
+│   ├── status.sh
+│   └── [other scripts]
 └── sites/
     ├── _template/
     │   ├── index.html
@@ -89,6 +97,9 @@ This script will:
 
 - caddy: Static file serving and automatic HTTPS (on-demand TLS)
 - ask: Lightweight approval endpoint that authorizes certificates only when `sites/<domain>/` exists
+- php-fpm: PHP processing for dynamic content
+- node-exporter: System metrics (RAM, CPU, disk) - optional monitoring
+- php-fpm-exporter: PHP process metrics - optional monitoring
 
 ## Security
 
@@ -181,6 +192,29 @@ This script:
 - Improves performance for high-traffic sites
 
 **Note:** The warning doesn't break functionality, but fixing it improves performance.
+
+## Monitoring
+
+Monitor your server's health, RAM usage, and visitor traffic:
+
+```bash
+sudo ./scripts/setup-monitoring-simple.sh
+```
+
+This provides:
+- **System metrics**: RAM, CPU, disk usage
+- **Web traffic**: Request rates, response times, errors
+- **PHP performance**: Process pool status
+- **Application metrics**: Domain approvals, service health
+
+The script automatically configures security and shows you the Prometheus targets to add to your existing Grafana server.
+
+**Check status anytime:**
+```bash
+./scripts/status.sh
+```
+
+See `monitoring/README.md` for details.
 
 ## Troubleshooting
 
