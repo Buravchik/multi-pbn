@@ -22,6 +22,11 @@
 	# Serve static files
 	file_server
 
+	# Handle favicon.ico requests - return 204 No Content to prevent 404s
+	handle /favicon.ico {
+		respond 204
+	}
+
 	# Handle SPA routing - redirect non-existing resources to index.php
 	# This should be LAST so it only catches files that don't exist
 	handle {
