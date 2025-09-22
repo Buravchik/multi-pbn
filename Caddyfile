@@ -13,7 +13,15 @@
 :443 {
 	root * /srv/sites/{host}
 	encode zstd gzip
+	
+	# Handle PHP files
+	php_fastcgi php-fpm:9000 {
+		index index.php index.html
+	}
+	
+	# Serve static files
 	file_server
+	
 	tls {
 		on_demand
 	}

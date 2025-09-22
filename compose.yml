@@ -33,6 +33,19 @@ services:
       timeout: 3s
       retries: 3
 
+  php-fpm:
+    image: php:8.2-fpm-alpine
+    restart: unless-stopped
+    volumes:
+      - ./sites:/srv/sites:ro
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
 volumes:
   caddy_data:
   caddy_config:
