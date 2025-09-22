@@ -11,3 +11,6 @@ RUN install-php-extensions zip
 
 # Verify the extension is installed
 RUN php -m | grep -i zip
+
+# Copy custom PHP-FPM configuration
+COPY www.conf /usr/local/etc/php-fpm.d/www.conf
