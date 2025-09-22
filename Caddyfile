@@ -16,7 +16,14 @@
 	root * /srv/sites/{host}
 	encode zstd gzip
 
+	# Handle PHP files FIRST - this must come before file_server
+	php_fastcgi php-fpm:9000
+
+	# Serve static files
+	file_server
+
 	# Handle SPA routing - redirect non-existing resources to index.php
+	# This should be LAST so it only catches files that don't exist
 	handle {
 		@notFound {
 			not path *.php
@@ -42,12 +49,6 @@
 		file_server
 	}
 
-	# Handle PHP files
-	php_fastcgi php-fpm:9000
-
-	# Serve static files
-	file_server
-
 	tls {
 		on_demand
 	}
@@ -67,10 +68,14 @@
 # Prometheus metrics endpoint (internal only)
 # SECURITY: This endpoint should be restricted to internal networks only
 # Authentication is required for metrics access
-:2019/metrics {
-	basicauth {
-		metrics_user $apr1$vkLD8Hlv$BXSln29nvlVFw0gvE7MkE.
+:2019 {
+	handle /metrics {
+		basic_auth {
+			metrics_user $apr1$vkLD8Hlv$BXSln29nvlVFw0gvE7MkE.
+		}
+		metrics
 	}
-	metrics
-	respond /health 200
+	handle /health {
+		respond 200
+	}
 }
