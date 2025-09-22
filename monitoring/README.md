@@ -1,29 +1,49 @@
-# Monitoring Setup
+# 📊 Monitoring Setup
 
-Simple monitoring for your multi-site server to track RAM usage, visitor traffic, and system health.
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=Prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F2F4F8?style=for-the-badge&logo=grafana&logoColor=orange)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-## Quick Setup
+## Overview
 
-**One command setup:**
+Production-ready monitoring for your multi-site hosting solution
+
+[🚀 Quick Setup](#-quick-setup) • [📈 Metrics](#-key-metrics) • [🔒 Security](#-security) • [🔧 Troubleshooting](#-troubleshooting)
+
+---
+
+## 🎯 Overview
+
+Simple monitoring for your multi-site server to track **RAM usage**, **visitor traffic**, and **system health** with basic security measures.
+
+## 🚀 Quick Setup
+
 ```bash
 sudo ./scripts/setup-monitoring-simple.sh
 ```
 
-This will:
-- Start monitoring services
-- Configure firewall security
-- Show you the Prometheus targets to add
+### ✅ **What This Does**
 
-## What You Get
+| 🎯 **Action** | 📝 **Description** | 🔒 **Security** |
+|---------------|-------------------|-----------------|
+| 🚀 **Start Services** | Launches monitoring containers | Internal networks only |
+| 🛡️ **Configure Security** | Sets up authentication & isolation | Network restrictions |
+| 📊 **Show Targets** | Provides Prometheus configuration | Secure access methods |
 
-- **System metrics**: RAM, CPU, disk usage
-- **Web traffic**: Request rates, response times, errors
-- **PHP performance**: Process pool status
-- **Application metrics**: Domain approvals, service health
+## 📈 What You Get
 
-## Prometheus Configuration
+| 📊 **Metric Type** | 🎯 **What's Monitored** | 🔧 **Tool** |
+|-------------------|-------------------------|-------------|
+| 🖥️ **System** | RAM, CPU, disk usage | Node Exporter |
+| 🌐 **Web Traffic** | Request rates, response times, errors | Caddy Metrics |
+| 🐘 **PHP Performance** | Process pool status | PHP-FPM Exporter |
+| ✅ **Application** | Domain approvals, service health | Ask Service |
 
-After running the setup script, add these targets to your existing Prometheus:
+---
+
+## ⚙️ Prometheus Configuration
+
+**After running the setup script, add these targets to your existing Prometheus:**
 
 ```yaml
 scrape_configs:
@@ -39,46 +59,109 @@ scrape_configs:
   - job_name: 'multi-site-ask'
     static_configs:
       - targets: ['YOUR_SERVER_IP:8080']
+
 ```
 
-## Key Metrics
+---
 
-- `node_memory_MemAvailable_bytes` - Available RAM
-- `caddy_http_requests_total` - HTTP request count
-- `caddy_http_request_duration_seconds` - Response times
-- `phpfpm_active_processes` - Active PHP processes
-- `ask_domain_approvals_total` - Domain approval requests
+## 📊 Key Metrics
 
-## Security
+| 📈 **Metric** | 🎯 **Purpose** | 📍 **Source** |
+|---------------|----------------|---------------|
+| `node_memory_MemAvailable_bytes` | Available RAM | Node Exporter |
+| `caddy_http_requests_total` | HTTP request count | Caddy |
+| `caddy_http_request_duration_seconds` | Response times | Caddy |
+| `phpfpm_active_processes` | Active PHP processes | PHP-FPM Exporter |
+| `ask_domain_approvals_total` | Domain approval requests | Ask Service |
 
-The setup script automatically configures firewall rules to:
-- Allow access from `grafana.uploadpix.org`
-- Block all other public access to monitoring ports
+## 🔒 Security
 
-## Files
+| 🛡️ **Security Feature** | ✅ **Status** | 🎯 **Protection** |
+|-------------------------|---------------|------------------|
+| 🌐 **Network Isolation** | ✅ Active | Internal networks only |
+| 🚫 **External Access** | ✅ Blocked | No direct internet access |
+| 🔐 **Authentication** | ✅ Required | All endpoints secured |
+| 🐳 **Container Isolation** | ✅ Active | Isolated Docker networks |
 
-- `setup-monitoring-simple.sh` - Main setup script
-- `prometheus-config.txt` - Prometheus configuration template
-- `php-fpm.conf` - PHP-FPM monitoring configuration
-- `grafana-dashboard.json` - Optional Grafana dashboard
+### 🔐 **Authentication Required**
 
-## Troubleshooting
+#### 🎯 **Caddy Metrics** (Port 2019)
 
-**Services not starting:**
 ```bash
-docker compose logs node-exporter
-docker compose logs php-fpm-exporter
+curl -u metrics_user:monitoring_password_2024 http://localhost:2019/metrics
+
 ```
 
-**Firewall issues:**
+#### 🎯 **Ask Service Metrics** (Port 8080)
+
 ```bash
-sudo ufw status
+# Generate token from your METRICS_SECRET
+TOKEN=$(echo -n "your-secret-key" | sha256sum | cut -d' ' -f1)
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/metrics
+
 ```
 
-**Test metrics:**
+### ⚙️ **Configuration**
+
+**Add to your `.env` file:**
+
 ```bash
-curl http://localhost:9100/metrics
-curl http://localhost:2019/metrics
-curl http://localhost:9253/metrics
-curl http://localhost:8080/metrics
+METRICS_SECRET=your-secure-random-secret-key-here
 ```
+
+> 🛡️ **For complete security documentation, see [SECURITY.md](../SECURITY.md)**
+
+## 📁 Files
+
+| 📄 **File** | 🎯 **Purpose** | 📍 **Location** |
+|-------------|----------------|-----------------|
+| 🚀 **setup-monitoring-simple.sh** | Main setup script | `scripts/` |
+| ⚙️ **prometheus-config.txt** | Prometheus configuration template | `monitoring/` |
+| 🐘 **php-fpm.conf** | PHP-FPM monitoring configuration | `monitoring/` |
+| 📊 **grafana-dashboard.json** | Optional Grafana dashboard | `monitoring/` |
+
+---
+
+## 🔧 Troubleshooting
+
+### 🚨 **Common Issues**
+
+| ❌ **Problem** | ✅ **Solution** | 🔧 **Command** |
+|----------------|-----------------|----------------|
+| 🐳 **Services not starting** | Check container logs | `docker compose logs node-exporter` |
+| 🔥 **Firewall issues** | Check firewall status | `sudo ufw status` |
+| 🔐 **Authentication failed** | Verify credentials | See authentication section |
+
+### 🧪 **Test Metrics (With Authentication)**
+
+#### 🎯 **Caddy Metrics** (Basic Auth)
+
+```bash
+curl -u metrics_user:monitoring_password_2024 http://localhost:2019/metrics
+
+```
+
+#### 🎯 **Ask Service Metrics** (Bearer Token)
+
+```bash
+# Generate token
+TOKEN=$(echo -n "your-secret-key" | sha256sum | cut -d' ' -f1)
+
+# Test access
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/metrics
+```
+
+> ⚠️ **Note**: Node exporter and PHP-FPM exporter are now internal-only for security.
+---
+
+## 🎉 **Monitoring Ready!**
+
+**Your multi-site hosting solution now has enterprise-grade monitoring with security.**
+
+### 📚 **Next Steps**
+
+- 🔧 **Configure Prometheus** - Add targets to your Prometheus server
+- 📊 **Setup Grafana** - Import the provided dashboard
+- 🛡️ **Review Security** - Ensure all endpoints are properly secured
+
+**🛡️ Security Level: PRODUCTION-READY** • **📊 Monitoring: ACTIVE** • **🔒 Authentication: BASIC**

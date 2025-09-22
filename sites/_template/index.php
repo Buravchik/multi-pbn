@@ -37,8 +37,8 @@ $server_info = $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown';
                         <span><?php echo htmlspecialchars($server_info); ?></span>
                     </div>
                     <div class="info-item">
-                        <strong>Document Root:</strong>
-                        <span><?php echo htmlspecialchars($_SERVER['DOCUMENT_ROOT'] ?? 'Unknown'); ?></span>
+                        <strong>Site Status:</strong>
+                        <span>✅ Online and Running</span>
                     </div>
                 </div>
             </section>

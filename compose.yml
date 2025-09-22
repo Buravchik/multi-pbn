@@ -27,6 +27,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./sites:/srv/sites:ro
+    environment:
+      METRICS_SECRET: ${METRICS_SECRET:-change-this-secret-key}
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:8080/health >/dev/null 2>&1 || exit 1"]
       interval: 30s
@@ -48,11 +50,15 @@ services:
       retries: 3
 
   # Monitoring services (for external Grafana to scrape)
+  # SECURITY: These ports are restricted to internal networks only
   node-exporter:
     image: prom/node-exporter:latest
     restart: unless-stopped
-    ports:
-      - "9100:9100"
+    # Restrict to internal networks only - remove external port exposure
+    # ports:
+    #   - "9100:9100"
+    networks:
+      - monitoring
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -71,8 +77,11 @@ services:
   php-fpm-exporter:
     image: hipages/php-fpm_exporter:latest
     restart: unless-stopped
-    ports:
-      - "9253:9253"
+    # Restrict to internal networks only - remove external port exposure
+    # ports:
+    #   - "9253:9253"
+    networks:
+      - monitoring
     environment:
       PHP_FPM_SCRAPE_URI: "tcp://php-fpm:9000/status"
     depends_on:
@@ -87,4 +96,9 @@ volumes:
   caddy_data:
   caddy_config:
   caddy_logs:
+
+networks:
+  monitoring:
+    driver: bridge
+    internal: true
 

@@ -35,6 +35,13 @@ if ! grep -q "CADDY_EMAIL=" .env || grep -q "CADDY_EMAIL=you@example.com" .env; 
     exit 1
 fi
 
+# Check and generate METRICS_SECRET if needed
+if ! grep -q "METRICS_SECRET=" .env || grep -q "METRICS_SECRET=change-this-secret-key-here" .env; then
+    echo "🔐 METRICS_SECRET not configured, generating secure secret..."
+    ./scripts/generate-secret.sh
+    echo ""
+fi
+
 # Validate Caddyfile
 echo "🔍 Validating Caddyfile..."
 if ! ./scripts/format-caddyfile.sh > /dev/null 2>&1; then

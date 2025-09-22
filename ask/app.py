@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify
 import os
 import time
+import hashlib
+import hmac
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__)
 
 SITES_ROOT = os.environ.get("SITES_ROOT", "/srv/sites")
+METRICS_SECRET = os.environ.get("METRICS_SECRET", "change-this-secret-key")
 
 # Prometheus metrics
 REQUEST_COUNT = Counter('ask_requests_total', 'Total requests', ['method', 'endpoint', 'status'])
@@ -27,8 +30,23 @@ def after_request(response):
 def health():
     return "ok", 200
 
+def verify_metrics_auth():
+    """Verify authentication for metrics endpoint"""
+    auth_header = request.headers.get('Authorization', '')
+    if not auth_header.startswith('Bearer '):
+        return False
+    
+    token = auth_header[7:]  # Remove 'Bearer ' prefix
+    expected_token = hashlib.sha256(METRICS_SECRET.encode()).hexdigest()
+    
+    return hmac.compare_digest(token, expected_token)
+
 @app.get("/metrics")
 def metrics():
+    # Require authentication for metrics endpoint
+    if not verify_metrics_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
     return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 @app.route("/allow", methods=["GET", "POST"])
