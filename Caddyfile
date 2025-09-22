@@ -22,6 +22,32 @@
 	# Serve static files
 	file_server
 
+	# Handle SPA routing - redirect non-existing resources to index.html
+	handle {
+		@notFound {
+			not path *.php
+			not path *.css
+			not path *.js
+			not path *.png
+			not path *.jpg
+			not path *.jpeg
+			not path *.gif
+			not path *.svg
+			not path *.ico
+			not path *.woff
+			not path *.woff2
+			not path *.ttf
+			not path *.eot
+			not path *.pdf
+			not path *.zip
+			not path *.txt
+			not path *.xml
+			not path *.json
+		}
+		rewrite @notFound /index.php
+		file_server
+	}
+
 	tls {
 		on_demand
 	}
