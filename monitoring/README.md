@@ -36,7 +36,7 @@ sudo ./scripts/setup-monitoring-simple.sh
 |-------------------|-------------------------|-------------|
 | 🖥️ **System** | RAM, CPU, disk usage | Node Exporter |
 | 🌐 **Web Traffic** | Request rates, response times, errors | Caddy Metrics |
-| 🐘 **PHP Performance** | Process pool status | PHP-FPM Exporter |
+| 🐘 **PHP Performance** | Process pool status, extensions | PHP-FPM Exporter |
 | ✅ **Application** | Domain approvals, service health | Ask Service |
 
 ---
@@ -119,6 +119,7 @@ METRICS_SECRET=your-secure-random-secret-key-here
 | ⚙️ **prometheus-config.txt** | Prometheus configuration template | `monitoring/` |
 | 🐘 **php-fpm.conf** | PHP-FPM monitoring configuration | `monitoring/` |
 | 📊 **grafana-dashboard.json** | Optional Grafana dashboard | `monitoring/` |
+| 🐳 **php-fpm/Dockerfile** | Custom PHP-FPM with extensions | `php-fpm/` |
 
 ---
 

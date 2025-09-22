@@ -36,7 +36,7 @@ services:
       retries: 3
 
   php-fpm:
-    image: php:8.2-fpm-alpine
+    build: ./php-fpm
     restart: unless-stopped
     volumes:
       - ./sites:/srv/sites:ro

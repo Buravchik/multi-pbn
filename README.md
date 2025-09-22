@@ -102,6 +102,8 @@ This solution deploys **hundreds of static sites** (HTML/JS/CSS/PHP) behind a si
 ├── 🐳 ask/                      # Domain approval service
 │   ├── 🐍 app.py
 │   └── 🐳 Dockerfile
+├── 🐘 php-fpm/                  # Custom PHP-FPM with extensions
+│   └── 🐳 Dockerfile            # PHP with zip extension
 └── 🌐 sites/                    # Your websites
     ├── 📋 _template/            # Site template
     │   ├── 📄 index.html
@@ -136,6 +138,47 @@ This solution deploys **hundreds of static sites** (HTML/JS/CSS/PHP) behind a si
 | 🐘 **PHP-FPM** | PHP processing | High - Read-only mounts |
 | 📊 **Node Exporter** | System metrics | High - Internal network |
 | 📈 **PHP-FPM Exporter** | PHP metrics | High - Internal network |
+
+## 🐘 PHP Extensions
+
+This setup includes a **custom PHP-FPM image** with the **zip extension** pre-installed using the industry-standard [Docker PHP Extension Installer](https://github.com/mlocati/docker-php-extension-installer).
+
+### ✅ **Pre-installed Extensions**
+
+| 🐘 **Extension** | 🎯 **Purpose** | 📝 **Usage** |
+|------------------|----------------|--------------|
+| **zip** | Archive handling | Create/read ZIP files in PHP |
+
+### 🔧 **Adding More Extensions**
+
+To add additional PHP extensions, edit `php-fpm/Dockerfile`:
+
+```dockerfile
+# Add more extensions
+RUN install-php-extensions zip gd imagick redis
+```
+
+**Common extensions you might need:**
+
+| 🐘 **Extension** | 🎯 **Purpose** | 📝 **Use Case** |
+|------------------|----------------|-----------------|
+| **gd** | Image processing | Image manipulation, thumbnails |
+| **imagick** | Advanced image processing | PDF generation, complex images |
+| **redis** | Redis database | Caching, sessions |
+| **mysqli** | MySQL database | Database connections |
+| **curl** | HTTP requests | API calls, web scraping |
+| **json** | JSON handling | API responses, data exchange |
+
+### 🧪 **Testing Extensions**
+
+Visit `https://your-domain.com/zip-test.php` to verify extensions are working.
+
+**After adding extensions:**
+
+```bash
+docker compose build php-fpm
+docker compose up -d
+```
 
 ## 🛡️ Security
 
