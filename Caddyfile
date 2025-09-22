@@ -15,9 +15,7 @@
 	encode zstd gzip
 	
 	# Handle PHP files
-	php_fastcgi php-fpm:9000 {
-		index index.php index.html
-	}
+	php_fastcgi php-fpm:9000
 	
 	# Serve static files
 	file_server
