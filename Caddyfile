@@ -16,13 +16,7 @@
 	root * /srv/sites/{host}
 	encode zstd gzip
 
-	# Handle PHP files
-	php_fastcgi php-fpm:9000
-
-	# Serve static files
-	file_server
-
-	# Handle SPA routing - redirect non-existing resources to index.html
+	# Handle SPA routing - redirect non-existing resources to index.php
 	handle {
 		@notFound {
 			not path *.php
@@ -47,6 +41,12 @@
 		rewrite @notFound /index.php
 		file_server
 	}
+
+	# Handle PHP files
+	php_fastcgi php-fpm:9000
+
+	# Serve static files
+	file_server
 
 	tls {
 		on_demand
