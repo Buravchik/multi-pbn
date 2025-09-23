@@ -103,7 +103,8 @@ This solution deploys **hundreds of static sites** (HTML/JS/CSS/PHP) behind a si
 │   ├── 🐍 app.py
 │   └── 🐳 Dockerfile
 ├── 🐘 php-fpm/                  # Custom PHP-FPM with extensions
-│   └── 🐳 Dockerfile            # PHP with zip extension
+│   ├── 🐳 Dockerfile            # PHP with zip extension
+│   └── 🧰 10-fix-permissions.sh # Optional startup chown/perms fix (enabled via SITES_CHOWN_ON_START)
 └── 🌐 sites/                    # Your websites
     ├── 📋 _template/            # Site template
     │   ├── 📄 index.html
