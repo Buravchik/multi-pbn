@@ -39,7 +39,7 @@ services:
     build: ./php-fpm
     restart: unless-stopped
     volumes:
-      - ./sites:/srv/sites:ro
+      - ./sites:/srv/sites
       - ./monitoring/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-monitoring.conf:ro
     environment:
       TZ: UTC
