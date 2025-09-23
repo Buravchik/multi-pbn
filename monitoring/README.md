@@ -111,6 +111,13 @@ METRICS_SECRET=your-secure-random-secret-key-here
 
 > 🛡️ **For complete security documentation, see [SECURITY.md](../SECURITY.md)**
 
+### 🐘 PHP-FPM Exporter Notes
+
+- Exporter runs on an internal network and connects to `php-fpm:9000`.
+- Ensure the exporter can resolve the `php-fpm` service by attaching it to the default Docker network (already configured).
+- Scrape URI is set to `tcp://php-fpm:9000/status` (JSON is also supported via `?json`).
+- If metrics don’t appear immediately, give Prometheus one scrape interval and verify connectivity inside the container.
+
 ## 📁 Files
 
 | 📄 **File** | 🎯 **Purpose** | 📍 **Location** |

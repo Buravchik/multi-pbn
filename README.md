@@ -203,6 +203,24 @@ This removes the need for manual chown after deploys.
 
 > Validation: `./scripts/validate.sh` will fail if required envs (like `CADDY_EMAIL`) are missing. Optional envs above default to safe values when not set.
 
+### 🔀 Caddy Routing Required by Archivarix
+
+Archivarix CMS recommends Apache with FastCGI, or for NGINX/PHP-FPM to route all requests to non-existent files and folders to `/index.php`.
+
+This project uses Caddy + PHP-FPM. The `Caddyfile` is configured to rely on `php_fastcgi`'s built‑in `try_files` behavior, which automatically:
+
+- checks if the requested path is a real file/directory,
+- and when it is not, forwards the request to `/index.php`.
+
+Important ordering already applied in `Caddyfile`:
+
+- `root`/`encode`
+- specific handlers like `handle /favicon.ico`
+- `php_fastcgi php-fpm:9000` (before `file_server`)
+- `file_server`
+
+This satisfies Archivarix’s requirement without custom rewrite rules.
+
 ## 🛡️ Security
 
 | 🛡️ **Security Layer** | ✅ **Status** | 🎯 **Protection** |

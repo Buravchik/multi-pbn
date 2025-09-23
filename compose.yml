@@ -82,8 +82,10 @@ services:
     #   - "9253:9253"
     networks:
       - monitoring
+      - default
     environment:
-      PHP_FPM_SCRAPE_URI: "tcp://php-fpm:9000/status"
+      PHP_FPM_SCRAPE_URI: "tcp://php-fpm:9000/status?json"
+      PHP_FPM_SCRAPE_URIS: "tcp://php-fpm:9000/status?json"
     depends_on:
       - php-fpm
     healthcheck:
