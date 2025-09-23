@@ -45,6 +45,24 @@ example.com:80 {
 	file_server
 }
 
+# Local test domain with self-signed certificate
+test.local:443 {
+	root * /srv/sites/{host}
+	encode zstd gzip
+
+	handle /favicon.ico {
+		respond 204
+	}
+
+	php_fastcgi php-fpm:9000 {
+		try_files {path} {path}/index.php /index.php
+	}
+
+	file_server
+
+	tls internal
+}
+
 :443 {
 	root * /srv/sites/{host}
 	encode zstd gzip
