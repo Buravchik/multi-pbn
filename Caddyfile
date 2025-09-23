@@ -9,7 +9,40 @@
 }
 
 :80 {
+	# Local testing: serve content directly for localhost without redirect
+	@local {
+		remote_ip 127.0.0.1
+	}
+	handle @local {
+		root * /srv/sites/{host}
+		encode zstd gzip
+		handle /favicon.ico {
+			respond 204
+		}
+		php_fastcgi php-fpm:9000 {
+			try_files {path} {path}/index.php /index.php
+		}
+		file_server
+	}
+
+	# Default: redirect others to HTTPS
 	redir https://{host}{uri}
+}
+
+# Host-specific HTTP block for local testing of example.com
+example.com:80 {
+	root * /srv/sites/{host}
+	encode zstd gzip
+
+	handle /favicon.ico {
+		respond 204
+	}
+
+	php_fastcgi php-fpm:9000 {
+		try_files {path} {path}/index.php /index.php
+	}
+
+	file_server
 }
 
 :443 {
@@ -22,8 +55,10 @@
 	}
 
 	# Handle PHP files explicitly
-	# Use built-in try_files behavior to route non-existent files/dirs to /index.php
-	php_fastcgi php-fpm:9000
+	# Use explicit try_files to ensure non-existent files/dirs route to /index.php
+	php_fastcgi php-fpm:9000 {
+		try_files {path} {path}/index.php /index.php
+	}
 
 	# Serve static files last
 	file_server

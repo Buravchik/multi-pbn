@@ -196,6 +196,7 @@ SITES_DIR=/srv/sites
 ```
 
 What it does on php-fpm start (when enabled):
+
 - `chown -R www-data:www-data /srv/sites`
 - `chmod -R 775 (dirs) / 664 (files)`
 
