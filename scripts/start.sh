@@ -17,8 +17,13 @@ if [ ! -f .env ]; then
         read -p "Press Enter after editing .env file, or Ctrl+C to exit..."
     else
         echo "❌ No .env.example found! Creating basic .env..."
-        echo "CADDY_EMAIL=you@example.com" > .env
-        echo "TZ=UTC" >> .env
+        cat > .env <<'EOF'
+CADDY_EMAIL=you@example.com
+TZ=UTC
+METRICS_SECRET=
+SITES_CHOWN_ON_START=false
+SITES_DIR=/srv/sites
+EOF
         echo "✅ Created basic .env file"
         echo "⚠️  IMPORTANT: Edit .env and set your CADDY_EMAIL before starting!"
         echo "   Example: CADDY_EMAIL=your-email@example.com"
@@ -29,14 +34,18 @@ fi
 
 # Validate .env file
 echo "🔍 Validating environment configuration..."
-if ! grep -q "CADDY_EMAIL=" .env || grep -q "CADDY_EMAIL=you@example.com" .env; then
+if ! grep -q "^CADDY_EMAIL=" .env || grep -q "CADDY_EMAIL=you@example.com" .env; then
     echo "❌ CADDY_EMAIL not properly configured in .env file!"
     echo "   Please edit .env and set: CADDY_EMAIL=your-actual-email@example.com"
     exit 1
 fi
 
+# Ensure new optional vars exist with defaults
+if ! grep -q "^SITES_CHOWN_ON_START=" .env; then echo "SITES_CHOWN_ON_START=false" >> .env; fi
+if ! grep -q "^SITES_DIR=" .env; then echo "SITES_DIR=/srv/sites" >> .env; fi
+
 # Check and generate METRICS_SECRET if needed
-if ! grep -q "METRICS_SECRET=" .env || grep -q "METRICS_SECRET=change-this-secret-key-here" .env; then
+if ! grep -q "^METRICS_SECRET=" .env || grep -q "METRICS_SECRET=change-this-secret-key-here" .env || grep -q "^METRICS_SECRET=$" .env; then
     echo "🔐 METRICS_SECRET not configured, generating secure secret..."
     ./scripts/generate-secret.sh
     echo ""

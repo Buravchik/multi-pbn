@@ -14,3 +14,7 @@ RUN php -m | grep -i zip
 
 # Copy custom PHP-FPM configuration
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Startup hook to fix permissions if enabled
+COPY 10-fix-permissions.sh /docker-entrypoint.d/10-fix-permissions.sh
+RUN chmod +x /docker-entrypoint.d/10-fix-permissions.sh

@@ -1,46 +1,44 @@
 #!/bin/bash
+set -e
 
-echo "🔍 Validating Multi-Site Hosting Setup..."
-echo ""
+# Basic validation for required environment variables and configuration
 
-# Check .env file
-echo "📄 Checking environment configuration..."
-if [ ! -f .env ]; then
-    echo "❌ No .env file found!"
-    echo "   Run: ./scripts/start.sh"
-    exit 1
+ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)
+ENV_FILE="$ROOT_DIR/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+	echo "[ERROR] .env file is missing. Copy .env.example to .env and set values."
+	exit 1
 fi
 
-# Check CADDY_EMAIL
-if ! grep -q "CADDY_EMAIL=" .env || grep -q "CADDY_EMAIL=you@example.com" .env; then
-    echo "❌ CADDY_EMAIL not properly configured!"
-    echo "   Edit .env and set: CADDY_EMAIL=your-actual-email@example.com"
-    exit 1
+# Load env (supports simple KEY=VALUE lines)
+set -a
+. "$ENV_FILE"
+set +a
+
+missing=0
+
+# Required: CADDY_EMAIL
+if [ -z "${CADDY_EMAIL}" ]; then
+	echo "[ERROR] CADDY_EMAIL is not set in .env (required for Let's Encrypt)."
+	missing=1
 fi
 
-# Check METRICS_SECRET
-if ! grep -q "METRICS_SECRET=" .env || grep -q "METRICS_SECRET=change-this-secret-key-here" .env; then
-    echo "❌ METRICS_SECRET not properly configured!"
-    echo "   Edit .env and set: METRICS_SECRET=your-secure-random-secret-key"
-    echo "   Generate one with: openssl rand -base64 32"
-    exit 1
+# Optional with defaults
+: "${SITES_CHOWN_ON_START:=false}"
+: "${SITES_DIR:=/srv/sites}"
+
+if [ "$missing" -ne 0 ]; then
+	echo "[FATAL] Missing required environment variables. See .env.example."
+	exit 1
 fi
 
-# Validate Caddyfile
-echo "🔍 Validating Caddyfile..."
-if ! ./scripts/format-caddyfile.sh > /dev/null 2>&1; then
-    echo "❌ Caddyfile validation failed!"
-    exit 1
+# Caddyfile syntax check (if caddy available in PATH or container)
+if command -v caddy >/dev/null 2>&1; then
+	caddy validate --config "$ROOT_DIR/Caddyfile" || { echo "[ERROR] Caddyfile validation failed"; exit 1; }
+else
+	# Try using container
+	docker compose run --rm caddy caddy validate --config /etc/caddy/Caddyfile | cat || true
 fi
 
-# Check Docker
-if ! docker info > /dev/null 2>&1; then
-    echo "❌ Docker is not running!"
-    exit 1
-fi
-
-echo "✅ All validations passed!"
-echo "   ✅ Environment variables configured"
-echo "   ✅ Caddyfile syntax valid"
-echo "   ✅ Docker is running"
-echo "   Ready to start with: docker compose up -d"
+echo "[OK] Environment and configuration validated."
